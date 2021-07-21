@@ -13,6 +13,7 @@ module.exports = {
    rules: {
       'no-unreachable': 'off',
       'vue/valid-v-slot': 'off',
+      'no-console': 'off',
       //'vuetify/no-deprecated-classes': 'error',
       'vue/no-side-effects-in-computed-properties': 'off',
       'vue/component-name-in-template-casing': ['error', 'PascalCase'],
