@@ -27,11 +27,47 @@
 // @ is an alias to /src
 import EventCard from '@/components/EventCard.vue'
 import EventService from '../services/EventService'
-import { watchEffect } from 'vue'
+import NProgress from 'nprogress'
 export default {
    name: 'EventList',
    components: {
       EventCard
+   },
+   beforeRouteEnter(routeTo, routeFrom, next) {
+      NProgress.start()
+      EventService.getEvents(2, parseInt(routeTo.query.page) || 1)
+         .then((response) => {
+            next((comp) => {
+               comp.events = response.data
+               comp.totalEvents = response.headers['x-total-count']
+            })
+         })
+         .catch((error) => {
+            console.log(error)
+            next({
+               name: 'NetworkError'
+            })
+         })
+         .finally(() => {
+            NProgress.done()
+         })
+   },
+   beforeRouteUpdate(routeTo) {
+      NProgress.start()
+      EventService.getEvents(2, parseInt(routeTo.query.page) || 1)
+         .then((response) => {
+            this.events = response.data
+            this.totalEvents = response.headers['x-total-count']
+         })
+         .catch((error) => {
+            console.log(error)
+            return {
+               name: 'NetworkError'
+            }
+         })
+         .finally(() => {
+            NProgress.done()
+         })
    },
    props: {
       page: { type: String, default: '1' }
@@ -47,22 +83,6 @@ export default {
          var totalPages = Math.ceil(this.totalEvents / 2)
          return this.page < totalPages
       }
-   },
-   created() {
-      watchEffect(() => {
-         this.events = null
-         EventService.getEvents(2, this.page)
-            .then((response) => {
-               this.events = response.data
-               this.totalEvents = response.headers['x-total-count']
-            })
-            .catch((error) => {
-               this.$router.push({
-                  name: 'NetworkError'
-               })
-               console.log(error)
-            })
-      })
    }
 }
 </script>
