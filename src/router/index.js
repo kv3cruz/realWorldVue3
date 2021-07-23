@@ -4,12 +4,31 @@ import EventDetails from '../views/event/Details'
 import EventRegister from '../views/event/Register'
 import EventEdit from '../views/event/Edit'
 import EventLayout from '../views/event/Layout'
+import NotFound from '../views/NotFound'
+import NetworkError from '../views/NetworkError'
 const routes = [
    {
       path: '/',
       name: 'EventList',
       component: EventList,
       props: (route) => ({ page: parseInt(route.query.page) || 1 })
+   },
+   {
+      path: '/:notFoundAll(.*)',
+      name: 'NotFound',
+      component: NotFound
+   },
+   {
+      path: '/404/:resource',
+      name: '404Resource',
+      component: NotFound,
+      props: true
+   },
+   {
+      path: '/networkError',
+      name: 'NetworkError',
+      component: NetworkError,
+      props: true
    },
    {
       path: '/about',
@@ -21,7 +40,7 @@ const routes = [
          import(/* webpackChunkName: "about" */ '../views/About.vue')
    },
    {
-      path: '/event/:id',
+      path: '/events/:id',
       name: 'EventLayout',
       props: true,
       component: EventLayout,
@@ -43,6 +62,12 @@ const routes = [
             component: EventEdit
          }
       ]
+   },
+   {
+      path: '/event/:afterEvent(.*)',
+      redirect: (to) => {
+         return { path: '/events/' + to.params.afterEvent }
+      }
    }
 ]
 
